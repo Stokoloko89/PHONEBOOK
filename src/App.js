@@ -20,9 +20,32 @@ const App = () => {
   const addPersonHandler = (e) => {
     e.preventDefault();
 
-    if (persons.some((person) => person.name === newName)) {
+    if (
+      persons.some((person) => person.name === newName && newNum.length === 0)
+    ) {
       alert(`${newName} is already added to the Phonebook`);
       return;
+    }
+    if (
+      persons.some((person) => person.name === newName && newNum.length !== 0)
+    ) {
+      if (
+        window.confirm(
+          `${newName} is already added to the Phonebook, replace the old number with a new one?`
+        )
+      ) {
+        const person = persons.find((person) => person.name === newName);
+        const changedPerson = { ...person, number: newNum };
+        setPersons(
+          persons.map((person) =>
+            person.id !== changedPerson.id ? person : changedPerson
+          )
+        );
+        console.log(changedPerson);
+        console.log(persons);
+        setNewName("");
+        setNewNum("");
+      }
     } else {
       const newPerson = {
         name: newName,
@@ -44,11 +67,11 @@ const App = () => {
         (person) => person.name === e.target.value
       );
 
-      const updatedPersons = persons.filter(
+      const updatePersons = persons.filter(
         (person) => person.id !== toBeRemoved[0].id
       );
 
-      setPersons(updatedPersons);
+      setPersons(updatePersons);
       setNewName("");
       setNewNum("");
       personService.remove(toBeRemoved[0].id).then((success) => {
@@ -78,6 +101,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Filter onChange={(e) => setQuery(e.target.value)}></Filter>
+      <h2>Add a new Contact</h2>
       <PersonForm
         onSubmit={addPersonHandler}
         value={newName}
