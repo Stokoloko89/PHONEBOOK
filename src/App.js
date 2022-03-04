@@ -36,13 +36,16 @@ const App = () => {
       ) {
         const person = persons.find((person) => person.name === newName);
         const changedPerson = { ...person, number: newNum };
-        setPersons(
-          persons.map((person) =>
-            person.id !== changedPerson.id ? person : changedPerson
-          )
-        );
-        console.log(changedPerson);
-        console.log(persons);
+
+        personService
+          .update(person.id, changedPerson)
+          .then((updatedPersonsList) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== changedPerson.id ? person : updatedPersonsList
+              )
+            );
+          });
         setNewName("");
         setNewNum("");
       }
