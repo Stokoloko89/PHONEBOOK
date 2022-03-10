@@ -4,12 +4,16 @@ import Filter from "./Components/Filter";
 import PersonForm from "./Components/PersonForm";
 import Persons from "./Components/Persons";
 import personService from "./src/services/Phonebook";
+import Notification from "./Components/Notification";
+import ErrorNotification from "./Components/ErrorNotification";
 
 const App = () => {
   const [newName, setNewName] = useState("");
   const [newNum, setNewNum] = useState("");
   const [query, setQuery] = useState("");
   const [persons, setPersons] = useState([]);
+  const [confirmation, setConfirmation] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((currContactList) => {
@@ -46,6 +50,10 @@ const App = () => {
               )
             );
           });
+        setConfirmation(`Updated ${changedPerson.name} number`);
+        setTimeout(() => {
+          setConfirmation(null);
+        }, 1000);
         setNewName("");
         setNewNum("");
       }
@@ -58,6 +66,10 @@ const App = () => {
 
       personService.create(newPerson).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson));
+        setConfirmation(`Added ${newPerson.name}`);
+        setTimeout(() => {
+          setConfirmation(null);
+        }, 1000);
         setNewName("");
         setNewNum("");
       });
@@ -77,9 +89,19 @@ const App = () => {
       setPersons(updatePersons);
       setNewName("");
       setNewNum("");
-      personService.remove(toBeRemoved[0].id).then((success) => {
-        console.log(success);
-      });
+      personService
+        .remove(toBeRemoved[0].id)
+        .then((success) => {
+          console.log(success);
+        })
+        .catch((error) => {
+          setErrorMessage(
+            `${toBeRemoved[0].name} has already been removed from server`
+          );
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 2000);
+        });
     }
   };
 
@@ -104,6 +126,8 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Filter onChange={(e) => setQuery(e.target.value)}></Filter>
+      <ErrorNotification error={errorMessage}></ErrorNotification>
+      <Notification message={confirmation}></Notification>
       <h2>Add a new Contact</h2>
       <PersonForm
         onSubmit={addPersonHandler}
