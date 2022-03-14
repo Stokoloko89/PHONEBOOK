@@ -64,15 +64,21 @@ const App = () => {
         id: nanoid(),
       };
 
-      personService.create(newPerson).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setConfirmation(`Added ${newPerson.name}`);
-        setTimeout(() => {
-          setConfirmation(null);
-        }, 1000);
-        setNewName("");
-        setNewNum("");
-      });
+      personService
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setConfirmation(`Added ${newPerson.name}`);
+          setTimeout(() => {
+            setConfirmation(null);
+          }, 1000);
+          setNewName("");
+          setNewNum("");
+        })
+        .catch((error) => {
+          console.log(error);
+          setErrorMessage(`${error.message}`);
+        });
     }
   };
 
