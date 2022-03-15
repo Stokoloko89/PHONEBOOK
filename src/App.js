@@ -23,13 +23,6 @@ const App = () => {
 
   const addPersonHandler = (e) => {
     e.preventDefault();
-
-    if (
-      persons.some((person) => person.name === newName && newNum.length === 0)
-    ) {
-      alert(`${newName} is already added to the Phonebook`);
-      return;
-    }
     if (
       persons.some((person) => person.name === newName && newNum.length !== 0)
     ) {
@@ -77,7 +70,12 @@ const App = () => {
         })
         .catch((error) => {
           console.log(error);
-          setErrorMessage(`${error.message}`);
+          setErrorMessage(`${error.response.data.error}`);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 2000);
+          setNewName("");
+          setNewNum("");
         });
     }
   };
